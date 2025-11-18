@@ -14,14 +14,17 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/addList',
+    name: 'AddList',
     component: () => import('../views/addList.vue')
   },
   {
     path: '/ListDetail',
+    name: 'ListDetail',
     component: () => import('../views/ListDetail.vue')
   },
   {
     path: '/AddItem',
+    name: 'AddItem',
     component: () => import('../views/AddItem.vue')
   },
 ]
