@@ -1,61 +1,70 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Mis Listas</ion-title>
+
+    <!-- HEADER moderno -->
+    <ion-header translucent>
+      <ion-toolbar class="header-toolbar">
+        <ion-title size="large">Mis Listas</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content fullscreen>
+
+      <!-- Searchbar flotante -->
+      <div class="search-wrapper">
+        <ion-searchbar
+          v-model="searchText"
+          @ionInput="handleSearch"
+          placeholder="Buscar listas..."
+          class="search-modern"
+        ></ion-searchbar>
+      </div>
+
+      <!-- Refresher -->
       <ion-refresher slot="fixed" @ionRefresh="refresh($event)">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
-      <ion-searchbar
-        v-model="searchText"
-        showCancelButton="focus"
-        class="custom"
-        @ionInput="handleSearch"
-        placeholder="Buscar listas..."
-      ></ion-searchbar>
-
-      <div v-if="filteredLists.length === 0" style="text-align: center; padding: 40px 20px; color: #666;">
+      <!-- Empty state -->
+      <div v-if="filteredLists.length === 0" class="empty-state">
         <p>No hay listas disponibles</p>
-        <p style="font-size: 14px;">Crea tu primera lista de compras</p>
+        <p class="hint">Crea tu primera lista de compras</p>
       </div>
 
-      <div class="lists-container">
-        <ion-card
+      <!-- LISTA moderna -->
+      <ion-list inset="true" class="modern-list">
+        <ion-item-sliding
           v-for="list in filteredLists"
           :key="list.id"
-          @click="goToListDetail(list.id)"
-          class="list-card"
-          button
+          class="slide-item"
         >
-          <ion-card-header>
-            <ion-card-title class="title-row">
-              <ion-icon :icon="receipt" color="secondary" size="small"></ion-icon>
-              <span class="list-name">{{ list.name }}</span>
-              <ion-button
-                fill="clear"
-                size="small"
-                color="danger"
-                @click.stop="confirmDelete(list.id, list.name)"
-                class="delete-btn"
-              >
-                <ion-icon slot="icon-only" :icon="trash"></ion-icon>
-              </ion-button>
-            </ion-card-title>
-            <ion-card-subtitle class="list-info">
-              {{ formatDate(list.updatedAt) }} · {{ list.category }} · {{ list.items.length }} items
-            </ion-card-subtitle>
-          </ion-card-header>
-        </ion-card>
-      </div>
+          <ion-item button detail="false" @click="goToListDetail(list.id)" class="list-row">
 
-      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-        <ion-fab-button class="additem" @click="goToaddList">
-          <label for="">Nueva Lista</label>
+            <ion-label>
+              <h2 class="list-title">{{ list.name }}</h2>
+              <p class="list-sub">
+                {{ formatDate(list.updatedAt) }} · {{ list.category }} · {{ list.items.length }} items
+              </p>
+            </ion-label>
+
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option
+              color="danger"
+              expandable
+              @click="confirmDelete(list.id, list.name)"
+            >
+              <ion-icon slot="icon-only" :icon="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+
+      <!-- BOTÓN flotante moderno -->
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button class="fab-modern" @click="goToaddList">
+          <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
 
@@ -82,9 +91,12 @@ import {
   IonCardSubtitle,
   IonSearchbar,
   IonButton,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
   alertController
 } from '@ionic/vue';
-import { receipt, trash } from 'ionicons/icons';
+import { receipt, trash,add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useShoppingListStore } from '@/store/shoppingListStore';
 
@@ -163,54 +175,88 @@ function formatDate(date: Date): string {
 </script>
 
 <style scoped>
-.lists-container {
-  padding: 0 16px 80px 16px;
+.header-toolbar {
+  --background: transparent;
+  backdrop-filter: blur(10px);
+
+  /* Aumenta la altura del header */
+  --min-height: 90px; /* Prueba entre 80 y 120px */
+
+  padding-top: 30px; /* separa el título de la barra de estado */
 }
 
-.list-card {
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
+/* Searchbar flotante */
+.search-wrapper {
+  padding: 10px 16px 0 16px;
 }
 
-.list-card:active {
-  transform: scale(0.98);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+.search-modern {
+  --background: var(--ion-color-light);
+  --border-radius: 14px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 18px;
-  font-weight: 600;
+.search-modern {
+  --background: white;
+  --border-radius: 30px;
+  --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-.list-name {
-  flex: 1;
-  font-size: 18px;
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding-top: 80px;
+  color: var(--ion-color-medium);
+}
+
+.empty-state p {
+  margin: 6px 0;
+}
+
+.hint {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Lista moderna */
+.modern-list {
+  margin: 0 12px 80px 12px;
+  overflow: hidden;
+}
+
+.list-row {
+  --padding-start: 16px;
+  --padding-end: 10px;
+  --detail-icon-color: transparent;
+}
+
+.list-row:active {
+  background: rgba(0,0,0,0.04);
+}
+
+.icon-left {
+  font-size: 22px;
+  margin-right: 4px;
+}
+
+.list-title {
+  font-size: 17px;
   font-weight: 600;
   color: var(--ion-color-dark);
 }
 
-.list-info {
-  margin-top: 8px;
+.list-sub {
   font-size: 13px;
   color: var(--ion-color-medium);
 }
 
-.delete-btn {
-  margin: 0;
-  --padding-start: 8px;
-  --padding-end: 8px;
+/* FAB redondeado moderno */
+.fab-modern {
+  --border-radius: 50px;
+  --box-shadow: 0px 6px 16px rgba(0,0,0,0.15);
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
 }
 
-ion-searchbar {
-  --background: var(--ion-color-light);
-  --border-radius: 12px;
-  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 8px 16px;
-}
 </style>
