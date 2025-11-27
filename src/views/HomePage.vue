@@ -9,8 +9,6 @@
 
   <ion-content>
     <ion-list>
-      <ion-item button router-link="/home">Inicio</ion-item>
-      <ion-item button router-link="/settings">Configuración</ion-item>
       <ion-item class="theme-toggle-item">
         <div class="theme-toggle-container">
           <ion-icon :icon="sunnyOutline" class="theme-icon"></ion-icon>
@@ -27,7 +25,7 @@
 <ion-router-outlet id="main-content"></ion-router-outlet>
 
   
-    <ion-header translucent>
+    <ion-header>
       <ion-toolbar class="header-toolbar">
        
         <ion-title size="large">Mis Listas</ion-title>
@@ -73,16 +71,37 @@
 
             <ion-label>
               <h2 class="list-title">{{ list.name }}</h2>
-              <p class="list-sub">
-                {{ formatDate(list.updatedAt) }} ·
+
+              <div class="info-row">
+                <!-- FECHA -->
+                <span class="date-label">{{ formatDate(list.updatedAt) }}</span>
+
+                <!-- CHIP -->
                 <ion-chip :class="['category-chip', getCategoryClass(list.category)]">
                   <ion-label>{{ list.category }}</ion-label>
                 </ion-chip>
-                · {{ list.items.length }} items
-              </p>
+
+                <!-- DONA -->
+                <div class="progress-wrapper">
+                  <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg"
+                      d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"/>
+                    <path
+                      class="circle"
+                      :style="{
+                        'stroke-dasharray': '100.5',
+                        'stroke-dashoffset': 100.5 - (getProgress(list) / 100) * 100.5
+                      }"
+                      d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"
+                    />
+                    <text x="18" y="21.5" class="percentage">{{ getProgress(list) }}%</text>
+                  </svg>
+                </div>
+              </div>
+
             </ion-label>
 
-          </ion-item>
+        </ion-item>
 
           <ion-item-options side="end">
             <ion-item-option
@@ -254,6 +273,14 @@ function getCategoryClass(cat: string) {
   }
 }
 
+function getProgress(list: any) {
+  const total = list.items.length;
+  const completed = list.items.filter((i: any) => i.completed).length;
+
+  if (total === 0) return 0;
+  return Math.round((completed / total) * 100);
+}
+
 </script>
 
 <style scoped>
@@ -386,6 +413,63 @@ ion-toggle {
   --padding-end: 2px;
   --border-radius: 2px;
   transform: translateY(-1px);
+}
+
+.progress-wrapper {
+  width: 32px;
+  height: 32px;
+  margin-left: 6px;
+  display: inline-block;
+  vertical-align: middle;
+  transform: translateY(3px);
+}
+
+.circular-chart {
+  width: 32px;
+  height: 32px;
+  stroke-linecap: round;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #e6e6e6;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 3.8;
+  stroke: var(--ion-color-primary);
+  stroke-dasharray: 0, 100;
+  transition: stroke-dasharray 0.4s ease;
+}
+
+.percentage {
+  fill: #000;
+  font-size: 9px;
+  text-anchor: middle;
+  font-weight: bold;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.date-label {
+  font-size: 13px;
+  color: var(--ion-color-medium);
+}
+
+.category-chip {
+  margin: 0 auto; 
+}
+
+.progress-wrapper {
+  width: 32px;
+  height: 32px;
 }
 
 </style>

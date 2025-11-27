@@ -87,3 +87,10 @@ ion-card
 .dark-theme .chip-electronica { --background: #fffb0093; }
 .dark-theme .chip-farmacia { --background: #f700ff77; }
 .dark-theme .chip-otros { --background: #ff004080; }
+
+.dark-theme .percentage {
+  fill: #ffffff;
+  font-size: 9px;
+  text-anchor: middle;
+  font-weight: bold;
+}

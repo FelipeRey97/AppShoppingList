@@ -102,8 +102,9 @@ async function createList() {
     const toast = await toastController.create({
       message: `Lista "${newList.name}" creada exitosamente`,
       duration: 2000,
-      position: 'bottom',
-      color: 'success'
+      position: 'middle',
+      color: 'success',
+      cssClass: 'modern-toast'
     });
     toast.present();
 
@@ -116,8 +117,9 @@ async function createList() {
     const toast = await toastController.create({
       message: 'Error al crear la lista',
       duration: 2000,
-      position: 'bottom',
-      color: 'danger'
+      position: 'middle',
+      color: 'danger',
+      cssClass: 'modern-toast'
     });
     toast.present();
   }
