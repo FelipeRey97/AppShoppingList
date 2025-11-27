@@ -74,7 +74,11 @@
             <ion-label>
               <h2 class="list-title">{{ list.name }}</h2>
               <p class="list-sub">
-                {{ formatDate(list.updatedAt) }} · {{ list.category }} · {{ list.items.length }} items
+                {{ formatDate(list.updatedAt) }} ·
+                <ion-chip :class="['category-chip', getCategoryClass(list.category)]">
+                  <ion-label>{{ list.category }}</ion-label>
+                </ion-chip>
+                · {{ list.items.length }} items
               </p>
             </ion-label>
 
@@ -128,7 +132,8 @@ import {
   alertController,
   IonMenu, 
   IonMenuButton,
-  IonToggle
+  IonToggle,
+  IonChip
 } from '@ionic/vue';
 import { receipt, trash,add, menuOutline, moon, sunnyOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
@@ -236,6 +241,16 @@ function applyTheme() {
     body.classList.add('dark-theme');
   } else {
     body.classList.remove('dark-theme');
+  }
+}
+
+function getCategoryClass(cat: string) {
+  switch (cat) {
+    case 'Mercado': return 'chip-mercado';
+    case 'Hogar': return 'chip-hogar';
+    case 'Electrónica': return 'chip-electronica';
+    case 'Farmacia': return 'chip-farmacia';
+    default: return 'chip-otros';
   }
 }
 
@@ -361,6 +376,16 @@ ion-toggle {
   --track-background-checked: var(--ion-color-primary);
   --handle-background: white;
   transform: scale(1.1);
+}
+
+.category-chip {
+  height: 11px;
+  font-size: 9px;
+  margin: 0 4px;
+  --padding-start: 2px;
+  --padding-end: 2px;
+  --border-radius: 2px;
+  transform: translateY(-1px);
 }
 
 </style>

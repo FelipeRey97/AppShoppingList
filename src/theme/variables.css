@@ -31,6 +31,8 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-medium: #9d9d9d;
   --ion-color-light: #2b2b2b;
   --ion-border-color: #333;
+
+  
 }
 
 body,
@@ -62,3 +64,26 @@ ion-card
 .header-toolbar ion-icon {
   color: var(--ion-text-color) !important;
 }
+
+.category-chip {
+  --color: rgb(24, 24, 24);
+  font-weight: 600;
+}
+
+.dark-theme .category-chip {
+  --color: rgb(218, 218, 218);
+  font-weight: 600;
+}
+
+/* Tema claro */
+.chip-mercado { --background: #b4f2b077; }
+.chip-hogar { --background: #a9d7ff77; } 
+.chip-electronica { --background: #d9b3ff49; }
+.chip-farmacia { --background: #ffd8a854; } 
+.chip-otros { --background: #d3d3d363; }    
+/* Tema oscuro */
+.dark-theme .chip-mercado { --background: #37ff147c; }
+.dark-theme .chip-hogar { --background: #00eaff8a; }
+.dark-theme .chip-electronica { --background: #fffb0093; }
+.dark-theme .chip-farmacia { --background: #f700ff77; }
+.dark-theme .chip-otros { --background: #ff004080; }
