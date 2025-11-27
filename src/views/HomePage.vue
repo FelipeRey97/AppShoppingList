@@ -1,10 +1,41 @@
 <template>
-  <ion-page>
+<ion-page>
+<ion-menu side="start" content-id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <!-- HEADER moderno -->
+  <ion-content>
+    <ion-list>
+      <ion-item button router-link="/home">Inicio</ion-item>
+      <ion-item button router-link="/settings">Configuración</ion-item>
+      <ion-item class="theme-toggle-item">
+        <div class="theme-toggle-container">
+          <ion-icon :icon="sunnyOutline" class="theme-icon"></ion-icon>
+          <ion-buttons slot="end">
+          <ion-toggle v-model="darkMode" @ionChange="toggleTheme" ></ion-toggle>
+          </ion-buttons>
+          <ion-icon :icon="moon" class="theme-icon"></ion-icon>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-router-outlet id="main-content"></ion-router-outlet>
+
+  
     <ion-header translucent>
       <ion-toolbar class="header-toolbar">
+       
         <ion-title size="large">Mis Listas</ion-title>
+         <ion-buttons slot="end">
+          <ion-button @click="openMenu">
+            <ion-icon :icon="menuOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -20,18 +51,18 @@
         ></ion-searchbar>
       </div>
 
-      <!-- Refresher -->
+   
       <ion-refresher slot="fixed" @ionRefresh="refresh($event)">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
-      <!-- Empty state -->
+   
       <div v-if="filteredLists.length === 0" class="empty-state">
         <p>No hay listas disponibles</p>
         <p class="hint">Crea tu primera lista de compras</p>
       </div>
 
-      <!-- LISTA moderna -->
+   
       <ion-list inset="true" class="modern-list">
         <ion-item-sliding
           v-for="list in filteredLists"
@@ -61,7 +92,7 @@
         </ion-item-sliding>
       </ion-list>
 
-      <!-- BOTÓN flotante moderno -->
+    
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button class="fab-modern" @click="goToaddList">
           <ion-icon :icon="add"></ion-icon>
@@ -94,9 +125,12 @@ import {
   IonItemSliding,
   IonItemOptions,
   IonItemOption,
-  alertController
+  alertController,
+  IonMenu, 
+  IonMenuButton,
+  IonToggle
 } from '@ionic/vue';
-import { receipt, trash,add } from 'ionicons/icons';
+import { receipt, trash,add, menuOutline, moon, sunnyOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useShoppingListStore } from '@/store/shoppingListStore';
 
@@ -104,13 +138,13 @@ const router = useRouter();
 const store = useShoppingListStore();
 const searchText = ref('');
 
-// Cargar listas al montar el componente
+
 onMounted(() => {
   store.initializeSampleData();
   store.loadLists();
 });
 
-// Listas filtradas por búsqueda
+
 const filteredLists = computed(() => {
   if (!searchText.value.trim()) {
     return store.sortedLists;
@@ -172,6 +206,39 @@ function formatDate(date: Date): string {
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+import { menuController } from '@ionic/vue';
+
+function openMenu() {
+  menuController.open();
+}
+
+const darkMode = ref(false);
+
+onMounted(() => {
+
+  const saved = localStorage.getItem('darkMode');
+  if (saved !== null) {
+    darkMode.value = saved === 'true';
+    applyTheme();
+  }
+});
+
+function toggleTheme() {
+  applyTheme();
+  localStorage.setItem('darkMode', darkMode.value.toString());
+}
+
+function applyTheme() {
+  const body = document.body;
+
+  if (darkMode.value) {
+    body.classList.add('dark-theme');
+  } else {
+    body.classList.remove('dark-theme');
+  }
+}
+
 </script>
 
 <style scoped>
@@ -179,10 +246,10 @@ function formatDate(date: Date): string {
   --background: transparent;
   backdrop-filter: blur(10px);
 
-  /* Aumenta la altura del header */
-  --min-height: 90px; /* Prueba entre 80 y 120px */
 
-  padding-top: 30px; /* separa el título de la barra de estado */
+  --min-height: 90px;
+
+  padding-top: 30px;
 }
 
 /* Searchbar flotante */
@@ -202,7 +269,7 @@ function formatDate(date: Date): string {
   --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Empty state */
+
 .empty-state {
   text-align: center;
   padding-top: 80px;
@@ -218,7 +285,7 @@ function formatDate(date: Date): string {
   opacity: 0.8;
 }
 
-/* Lista moderna */
+
 .modern-list {
   margin: 0 12px 80px 12px;
   overflow: hidden;
@@ -242,21 +309,58 @@ function formatDate(date: Date): string {
 .list-title {
   font-size: 17px;
   font-weight: 600;
-  color: var(--ion-color-dark);
+  color: var(--ion-text-color); 
 }
 
 .list-sub {
   font-size: 13px;
-  color: var(--ion-color-medium);
+  color: var(--ion-color-medium); 
 }
 
-/* FAB redondeado moderno */
 .fab-modern {
   --border-radius: 50px;
   --box-shadow: 0px 6px 16px rgba(0,0,0,0.15);
   width: 60px;
   height: 60px;
   font-size: 24px;
+}
+
+.header-toolbar ion-button {
+  --padding-start: 4px;
+  --padding-end: 4px;
+  --color: var(--ion-color-dark); 
+}
+
+.header-toolbar ion-icon {
+  font-size: 26px; 
+}
+
+.theme-toggle-item {
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.theme-toggle-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;     
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.theme-icon {
+  font-size: 24px;
+  color: var(--ion-color-medium);
+}
+
+ion-toggle {
+  --handle-width: 22px;
+  --handle-height: 22px;
+  --track-background: var(--ion-color-medium-tint);
+  --track-background-checked: var(--ion-color-primary);
+  --handle-background: white;
+  transform: scale(1.1);
 }
 
 </style>

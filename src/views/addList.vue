@@ -161,15 +161,19 @@ async function createList() {
 
 .modern-item ion-label {
   font-weight: 600;
-  color: var(--ion-color-dark-tint);
+  color: var(--ion-text-color); 
 }
 
 .modern-item ion-input,
 .modern-item ion-select {
-  --color: var(--ion-color-dark);
+  --color: var(--ion-text-color); 
   --placeholder-color: var(--ion-color-medium);
   padding-bottom: 6px;
 }
 
+ion-select-option{
+  --color: var(--ion-text-color); 
+
+}
 
 </style>

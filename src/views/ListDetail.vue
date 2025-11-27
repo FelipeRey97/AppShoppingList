@@ -220,7 +220,7 @@ async function confirmDeleteItem(itemId: string, itemName: string) {
 .item-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--ion-color-dark);
+  color: var(--ion-text-color);
 }
 
 .item-sub {

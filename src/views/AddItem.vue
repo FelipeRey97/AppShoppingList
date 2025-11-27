@@ -159,11 +159,11 @@ async function addItem() {
 
 .form-item ion-label {
   font-weight: 600;
-  color: var(--ion-color-dark-tint);
+  color: var(--ion-text-color); 
 }
 
 .form-item ion-input {
-  --color: var(--ion-color-dark);
+  --color: var(--ion-text-color); 
   --placeholder-color: var(--ion-color-medium);
   padding-bottom: 6px;
   font-size: 16px;
