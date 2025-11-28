@@ -1,61 +1,124 @@
 <template>
-  <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Mis Listas</ion-title>
+<ion-page>
+<ion-menu side="start" content-id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-list>
+      <ion-item class="theme-toggle-item">
+        <div class="theme-toggle-container">
+          <ion-icon :icon="sunnyOutline" class="theme-icon"></ion-icon>
+          <ion-buttons slot="end">
+          <ion-toggle v-model="darkMode" @ionChange="toggleTheme" ></ion-toggle>
+          </ion-buttons>
+          <ion-icon :icon="moon" class="theme-icon"></ion-icon>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-router-outlet id="main-content"></ion-router-outlet>
+
+  
+    <ion-header>
+      <ion-toolbar class="header-toolbar">
+       
+        <ion-title size="large">Mis Listas</ion-title>
+         <ion-buttons slot="end">
+          <ion-button @click="openMenu">
+            <ion-icon :icon="menuOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content fullscreen>
+
+      <!-- Searchbar flotante -->
+      <div class="search-wrapper">
+        <ion-searchbar
+          v-model="searchText"
+          @ionInput="handleSearch"
+          placeholder="Buscar listas..."
+          class="search-modern"
+        ></ion-searchbar>
+      </div>
+
+   
       <ion-refresher slot="fixed" @ionRefresh="refresh($event)">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
-      <ion-searchbar
-        v-model="searchText"
-        showCancelButton="focus"
-        class="custom"
-        @ionInput="handleSearch"
-        placeholder="Buscar listas..."
-      ></ion-searchbar>
-
-      <div v-if="filteredLists.length === 0" style="text-align: center; padding: 40px 20px; color: #666;">
+   
+      <div v-if="filteredLists.length === 0" class="empty-state">
         <p>No hay listas disponibles</p>
-        <p style="font-size: 14px;">Crea tu primera lista de compras</p>
+        <p class="hint">Crea tu primera lista de compras</p>
       </div>
 
-      <div class="lists-container">
-        <ion-card
+   
+      <ion-list inset="true" class="modern-list">
+        <ion-item-sliding
           v-for="list in filteredLists"
           :key="list.id"
-          @click="goToListDetail(list.id)"
-          class="list-card"
-          button
+          class="slide-item"
         >
-          <ion-card-header>
-            <ion-card-title class="title-row">
-              <ion-icon :icon="receipt" color="secondary" size="small"></ion-icon>
-              <span class="list-name">{{ list.name }}</span>
-              <ion-button
-                fill="clear"
-                size="small"
-                color="danger"
-                @click.stop="confirmDelete(list.id, list.name)"
-                class="delete-btn"
-              >
-                <ion-icon slot="icon-only" :icon="trash"></ion-icon>
-              </ion-button>
-            </ion-card-title>
-            <ion-card-subtitle class="list-info">
-              {{ formatDate(list.updatedAt) }} · {{ list.category }} · {{ list.items.length }} items
-            </ion-card-subtitle>
-          </ion-card-header>
-        </ion-card>
-      </div>
+          <ion-item button detail="false" @click="goToListDetail(list.id)" class="list-row">
 
-      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-        <ion-fab-button class="additem" @click="goToaddList">
-          <label for="">Nueva Lista</label>
+            <ion-label>
+              <h2 class="list-title">{{ list.name }}</h2>
+
+              <div class="info-row">
+                <!-- FECHA -->
+                <span class="date-label">{{ formatDate(list.updatedAt) }}</span>
+
+                <!-- CHIP -->
+                <ion-chip :class="['category-chip', getCategoryClass(list.category)]">
+                  <ion-label>{{ list.category }}</ion-label>
+                </ion-chip>
+
+                <!-- DONA -->
+                <div class="progress-wrapper">
+                  <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg"
+                      d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"/>
+                    <path
+                      class="circle"
+                      :style="{
+                        'stroke-dasharray': '100.5',
+                        'stroke-dashoffset': 100.5 - (getProgress(list) / 100) * 100.5
+                      }"
+                      d="M18 2 a 16 16 0 0 1 0 32 a 16 16 0 0 1 0 -32"
+                    />
+                    <text x="18" y="21.5" class="percentage">{{ getProgress(list) }}%</text>
+                  </svg>
+                </div>
+              </div>
+
+            </ion-label>
+
+        </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option
+              color="danger"
+              expandable
+              @click="confirmDelete(list.id, list.name)"
+            >
+              <ion-icon slot="icon-only" :icon="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+
+    
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button class="fab-modern" @click="goToaddList">
+          <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
 
@@ -82,9 +145,16 @@ import {
   IonCardSubtitle,
   IonSearchbar,
   IonButton,
-  alertController
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
+  alertController,
+  IonMenu, 
+  IonMenuButton,
+  IonToggle,
+  IonChip
 } from '@ionic/vue';
-import { receipt, trash } from 'ionicons/icons';
+import { receipt, trash,add, menuOutline, moon, sunnyOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useShoppingListStore } from '@/store/shoppingListStore';
 
@@ -92,13 +162,13 @@ const router = useRouter();
 const store = useShoppingListStore();
 const searchText = ref('');
 
-// Cargar listas al montar el componente
+
 onMounted(() => {
   store.initializeSampleData();
   store.loadLists();
 });
 
-// Listas filtradas por búsqueda
+
 const filteredLists = computed(() => {
   if (!searchText.value.trim()) {
     return store.sortedLists;
@@ -160,57 +230,246 @@ function formatDate(date: Date): string {
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+import { menuController } from '@ionic/vue';
+
+function openMenu() {
+  menuController.open();
+}
+
+const darkMode = ref(false);
+
+onMounted(() => {
+
+  const saved = localStorage.getItem('darkMode');
+  if (saved !== null) {
+    darkMode.value = saved === 'true';
+    applyTheme();
+  }
+});
+
+function toggleTheme() {
+  applyTheme();
+  localStorage.setItem('darkMode', darkMode.value.toString());
+}
+
+function applyTheme() {
+  const body = document.body;
+
+  if (darkMode.value) {
+    body.classList.add('dark-theme');
+  } else {
+    body.classList.remove('dark-theme');
+  }
+}
+
+function getCategoryClass(cat: string) {
+  switch (cat) {
+    case 'Mercado': return 'chip-mercado';
+    case 'Hogar': return 'chip-hogar';
+    case 'Electrónica': return 'chip-electronica';
+    case 'Farmacia': return 'chip-farmacia';
+    default: return 'chip-otros';
+  }
+}
+
+function getProgress(list: any) {
+  const total = list.items.length;
+  const completed = list.items.filter((i: any) => i.completed).length;
+
+  if (total === 0) return 0;
+  return Math.round((completed / total) * 100);
+}
+
 </script>
 
 <style scoped>
-.lists-container {
-  padding: 0 16px 80px 16px;
+.header-toolbar {
+  --background: transparent;
+  backdrop-filter: blur(10px);
+
+
+  --min-height: 90px;
+
+  padding-top: 30px;
 }
 
-.list-card {
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
+/* Searchbar flotante */
+.search-wrapper {
+  padding: 10px 16px 0 16px;
 }
 
-.list-card:active {
-  transform: scale(0.98);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+.search-modern {
+  --background: var(--ion-color-light);
+  --border-radius: 14px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.title-row {
+.search-modern {
+  --background: white;
+  --border-radius: 30px;
+  --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+
+.empty-state {
+  text-align: center;
+  padding-top: 80px;
+  color: var(--ion-color-medium);
+}
+
+.empty-state p {
+  margin: 6px 0;
+}
+
+.hint {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+
+.modern-list {
+  margin: 0 12px 80px 12px;
+  overflow: hidden;
+}
+
+.list-row {
+  --padding-start: 16px;
+  --padding-end: 10px;
+  --detail-icon-color: transparent;
+}
+
+.list-row:active {
+  background: rgba(0,0,0,0.04);
+}
+
+.icon-left {
+  font-size: 22px;
+  margin-right: 4px;
+}
+
+.list-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ion-text-color); 
+}
+
+.list-sub {
+  font-size: 13px;
+  color: var(--ion-color-medium); 
+}
+
+.fab-modern {
+  --border-radius: 50px;
+  --box-shadow: 0px 6px 16px rgba(0,0,0,0.15);
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+}
+
+.header-toolbar ion-button {
+  --padding-start: 4px;
+  --padding-end: 4px;
+  --color: var(--ion-color-dark); 
+}
+
+.header-toolbar ion-icon {
+  font-size: 26px; 
+}
+
+.theme-toggle-item {
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.theme-toggle-container {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 18px;
-  font-weight: 600;
+  justify-content: space-evenly;     
+  gap: 16px;
+  padding: 12px 0;
 }
 
-.list-name {
-  flex: 1;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--ion-color-dark);
+.theme-icon {
+  font-size: 24px;
+  color: var(--ion-color-medium);
 }
 
-.list-info {
-  margin-top: 8px;
+ion-toggle {
+  --handle-width: 22px;
+  --handle-height: 22px;
+  --track-background: var(--ion-color-medium-tint);
+  --track-background-checked: var(--ion-color-primary);
+  --handle-background: white;
+  transform: scale(1.1);
+}
+
+.category-chip {
+  height: 11px;
+  font-size: 9px;
+  margin: 0 4px;
+  --padding-start: 2px;
+  --padding-end: 2px;
+  --border-radius: 2px;
+  transform: translateY(-1px);
+}
+
+.progress-wrapper {
+  width: 32px;
+  height: 32px;
+  margin-left: 6px;
+  display: inline-block;
+  vertical-align: middle;
+  transform: translateY(3px);
+}
+
+.circular-chart {
+  width: 32px;
+  height: 32px;
+  stroke-linecap: round;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #e6e6e6;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 3.8;
+  stroke: var(--ion-color-primary);
+  stroke-dasharray: 0, 100;
+  transition: stroke-dasharray 0.4s ease;
+}
+
+.percentage {
+  fill: #000;
+  font-size: 9px;
+  text-anchor: middle;
+  font-weight: bold;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.date-label {
   font-size: 13px;
   color: var(--ion-color-medium);
 }
 
-.delete-btn {
-  margin: 0;
-  --padding-start: 8px;
-  --padding-end: 8px;
+.category-chip {
+  margin: 0 auto; 
 }
 
-ion-searchbar {
-  --background: var(--ion-color-light);
-  --border-radius: 12px;
-  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 8px 16px;
+.progress-wrapper {
+  width: 32px;
+  height: 32px;
 }
+
 </style>

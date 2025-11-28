@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header :translucent="false">
-      <ion-toolbar>
+      <ion-toolbar class="header-toolbar">
         <ion-buttons slot="start">
           <ion-back-button :text="getBackButtonText()" default-href="/"></ion-back-button>
           <ion-title>Agregar Item</ion-title>
@@ -38,11 +38,11 @@
 
         <ion-button
           expand="block"
-          @click="addItem"
-          class="submit-button"
+          class="soft-button"
           :disabled="!canSubmit"
-          size="large"
+          @click="addItem"
         >
+          <ion-icon name="add-outline" slot="start"></ion-icon>
           Agregar Item
         </ion-button>
       </div>
@@ -94,7 +94,6 @@ async function addItem() {
     const newItem = store.addItem(listId.value, itemName.value.trim(), quantity.value);
 
     if (newItem) {
-      // Mostrar mensaje de éxito
       const toast = await toastController.create({
         message: `Item "${newItem.name}" agregado exitosamente`,
         duration: 2000,
@@ -103,11 +102,9 @@ async function addItem() {
       });
       await toast.present();
 
-      // Limpiar formulario
       itemName.value = '';
       quantity.value = 1;
 
-      // Regresar a ListDetail
       router.push({ path: '/ListDetail', query: { id: listId.value } });
     } else {
       throw new Error('No se pudo agregar el item');
@@ -126,61 +123,50 @@ async function addItem() {
 </script>
 
 <style scoped>
+
+.header-toolbar {
+  --background: transparent;
+  backdrop-filter: blur(10px);
+  --min-height: 90px; 
+  padding-top: 30px; 
+}
+
 .form-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
+  padding: 0;
 }
 
 .form-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  margin: 0 0 8px 0;
   color: var(--ion-color-primary);
+  margin-bottom: 4px;
 }
 
 .form-subtitle {
   font-size: 14px;
   color: var(--ion-color-medium);
-  margin: 0 0 24px 0;
+  margin-bottom: 20px;
 }
 
 .form-item {
-  --background: var(--ion-color-light);
-  --border-radius: 12px;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
-  margin-bottom: 16px;
+  --background: transparent;
+  margin-bottom: 20px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border: 1px solid var(--ion-color-light-shade);
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.form-item ion-input {
-  --padding-start: 0;
-  --padding-end: 0;
 }
 
 .form-item ion-label {
   font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 8px;
-  color: var(--ion-color-dark);
+  color: var(--ion-text-color); 
 }
 
-.submit-button {
-  margin-top: 24px;
-  --border-radius: 12px;
-  font-weight: 600;
-  height: 50px;
-}
-
-/* Mejorar contraste del input */
-ion-input {
-  --color: var(--ion-color-dark);
+.form-item ion-input {
+  --color: var(--ion-text-color); 
   --placeholder-color: var(--ion-color-medium);
-  --placeholder-opacity: 0.7;
+  padding-bottom: 6px;
   font-size: 16px;
 }
+
 </style>

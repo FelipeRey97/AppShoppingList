@@ -1,2 +1,96 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+.dark-theme {
+  --ion-color-primary: #6b8cff;
+  --ion-color-primary-contrast: #ffffff;
+
+  --ion-background-color: #0f0f0f;
+  --ion-background-color-rgb: 15, 15, 15;
+
+  --ion-text-color: #f2f2f2;
+  --ion-text-color-rgb: 242, 242, 242;
+  --ion-label-color:#f2f2f2 ;
+  --ion-label-color-rgb:242, 242, 242;
+  --ion-color-step-50: #1a1a1a;
+  --ion-color-step-100: #222222;
+  --ion-color-step-150: #2a2a2a;
+  --ion-color-step-200: #333333;
+  --ion-color-step-250: #3b3b3b;
+  --ion-color-step-300: #444444;
+
+  --ion-toolbar-background: #141414;
+  --ion-toolbar-border-color: #2c2c2c;
+
+  --ion-item-background: #151515;
+  --ion-item-color: #e3e3e3;
+
+  --ion-card-background: #161616;
+  --ion-card-color: #e4e4e4;
+
+  --ion-color-medium: #9d9d9d;
+  --ion-color-light: #2b2b2b;
+  --ion-border-color: #333;
+
+  
+}
+
+body,
+ion-content,
+ion-toolbar,
+ion-item,
+ion-card
+{
+  transition: background 250ms ease, color 250ms ease;
+}
+
+.alert-wrapper,
+.alert-title,
+.alert-message,
+.alert-radio-label,
+.alert-checkbox-label {
+  color: var(--ion-text-color) !important;
+}
+
+.alert-radio-group,
+.alert-checkbox-group {
+  background: var(--ion-background-color) !important;
+}
+
+.alert-radio-inner {
+  border-color: var(--ion-color-primary) !important;
+}
+
+.header-toolbar ion-icon {
+  color: var(--ion-text-color) !important;
+}
+
+.category-chip {
+  --color: rgb(24, 24, 24);
+  font-weight: 600;
+}
+
+.dark-theme .category-chip {
+  --color: rgb(218, 218, 218);
+  font-weight: 600;
+}
+
+/* Tema claro */
+.chip-mercado { --background: #b4f2b077; }
+.chip-hogar { --background: #a9d7ff77; } 
+.chip-electronica { --background: #d9b3ff49; }
+.chip-farmacia { --background: #ffd8a854; } 
+.chip-otros { --background: #d3d3d363; }    
+/* Tema oscuro */
+.dark-theme .chip-mercado { --background: #37ff147c; }
+.dark-theme .chip-hogar { --background: #00eaff8a; }
+.dark-theme .chip-electronica { --background: #fffb0093; }
+.dark-theme .chip-farmacia { --background: #f700ff77; }
+.dark-theme .chip-otros { --background: #ff004080; }
+
+.dark-theme .percentage {
+  fill: #ffffff;
+  font-size: 9px;
+  text-anchor: middle;
+  font-weight: bold;
+}
